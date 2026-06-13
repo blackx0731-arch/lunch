@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ランチ帖">
+<title>ランチ帖</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#FFF9F0;--ink:#33291F;--sub:#8A7A66;
+  --accent:#C8442A;--accent-soft:#F6E3DC;
+  --green:#5F7A4B;--green-soft:#E9EFE2;
+  --star:#E0A437;--card:#FFF;--line:#EADFCE;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN',sans-serif;background:var(--bg);color:var(--ink);max-width:560px;margin:0 auto;padding-bottom:96px}
+.dm{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif}
+/* ── header ── */
+header{padding:22px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+.title{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:24px;letter-spacing:.04em}
+.title b{color:var(--accent)}
+.subtitle{font-size:11px;color:var(--sub);margin-top:2px;letter-spacing:.1em}
+.hright{display:flex;align-items:center;gap:10px}
+.stamp{font-family:'Zen Maru Gothic',sans-serif;border:2.5px solid var(--accent);color:var(--accent);border-radius:50%;width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(8deg);font-weight:900;line-height:1.1;flex-shrink:0}
+.stamp .n{font-size:15px}.stamp .u{font-size:8px;letter-spacing:.05em}
+.gear{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;line-height:1;color:var(--sub)}
+/* ── stats bar ── */
+#stats{padding:0 20px 6px;font-size:12px;color:var(--sub)}
+#stats .sc{color:var(--star);font-weight:700}
+/* ── main ── */
+main{padding:8px 16px 20px}
+/* ── inputs ── */
+input,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:16px;background:#fff;color:var(--ink);outline:none;font-family:inherit;appearance:none}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+label.lb{font-size:13px;font-weight:700;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.06em}
+button{border:none;border-radius:12px;padding:14px 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-accent{background:var(--accent);color:#fff;width:100%}
+.btn-green{background:var(--green);color:#fff;width:100%}
+.btn-ghost{background:transparent;color:var(--sub);border:1.5px solid var(--line)}
+/* ── chips / sort ── */
+.chip{border:1.5px solid var(--line);background:transparent;color:var(--sub);border-radius:100px;padding:6px 12px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.chip.on-red{border:none;background:var(--accent-soft);color:var(--accent)}
+.chip.on-green{border:none;background:var(--green-soft);color:var(--green)}
+.chiprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.sortrow{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sort{padding:6px 13px;font-size:12.5px;border-radius:12px;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
+.sort.on{background:var(--ink);color:#fff;border:none}
+/* ── search ── */
+.searchrow{position:relative;margin-bottom:10px}
+.searchrow input{padding-left:36px}
+.searchrow .sic{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none}
+/* ── card ── */
+.card{background:var(--card);border-radius:16px;border:1.5px solid var(--line);overflow:hidden;box-shadow:0 1px 3px rgba(51,41,31,.05);margin-bottom:12px;cursor:pointer}
+.card-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:0}
+.card-gallery img{width:100%;height:190px;object-fit:cover;flex-shrink:0;scroll-snap-align:start;display:block}
+.card-gallery.closed img{height:150px}
+.card .body{padding:13px 16px 14px}
+.cname{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:17px}
+.cmeta{font-size:12px;color:var(--sub);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{background:var(--green-soft);color:var(--green);border-radius:100px;padding:2px 9px;font-weight:700;font-size:11px}
+.price{font-weight:700;color:var(--ink)}
+.comment{font-size:14px;margin-top:8px;line-height:1.7;color:#564A3C;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card.open .comment{display:block}
+.cardbtns{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.cardbtns button{padding:8px 14px;font-size:13px}
+.b-edit{background:var(--accent-soft);color:var(--accent)}
+.b-map{background:#E8F0FF;color:#2A5AC8}
+/* ── score ── */
+.score{display:inline-flex;align-items:baseline;gap:2px;color:var(--star);font-weight:900;font-family:'Zen Maru Gothic',sans-serif;flex-shrink:0}
+.score .s1{font-size:13px}.score .s2{font-size:16px}.score .s3{font-size:10.5px;color:var(--sub);font-weight:700}
+.score.big .s1{font-size:16px}.score.big .s2{font-size:22px}.score.big .s3{font-size:12px}
+/* ── empty ── */
+.empty{text-align:center;padding:56px 24px;color:var(--sub)}
+.empty .ic{font-size:40px;margin-bottom:12px}
+.empty .t{font-weight:700;font-size:15.5px;margin-bottom:6px;color:var(--ink)}
+.empty .b{font-size:13.5px;line-height:1.8}
+/* ── form ── */
+.formcard{background:var(--card);border-radius:18px;border:1.5px solid var(--line);padding:20px 18px}
+.ftitle{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:18px;margin-bottom:16px}
+.frow{margin-bottom:14px}
+.frow2{display:flex;gap:10px;margin-bottom:14px}
+.frow2>div{flex:1}
+.genres{display:flex;flex-wrap:wrap;gap:7px}
+.sliderrow{display:flex;align-items:center;gap:14px}
+input[type=range]{flex:1;accent-color:var(--accent);height:30px;padding:0;border:none;background:transparent}
+.slidelabels{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);padding:2px 2px 0}
+/* ── photo thumbnails in form ── */
+.photo-strip{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.photo-thumb{position:relative;flex-shrink:0;width:82px;height:82px;border-radius:10px;overflow:hidden}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-thumb .del-ph{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;padding:0}
+.photo-add{flex-shrink:0;width:82px;height:82px;border-radius:10px;border:2px dashed var(--line);background:transparent;color:var(--sub);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;cursor:pointer}
+.photo-add .pa-ic{font-size:22px}
+/* ── wishlist ── */
+.wishform{background:var(--green-soft);border-radius:16px;padding:16px 16px 14px;margin-bottom:16px;border:1.5px solid #D6E0C8}
+.wishform input{margin-bottom:8px}
+.wishitem{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.wishitem .wname{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:15.5px}
+.wishitem .wmemo{font-size:12.5px;color:var(--sub);margin-top:2px}
+.wishitem .winfo{flex:1;min-width:0}
+.b-went{padding:9px 13px;font-size:13px;background:var(--accent);color:#fff;white-space:nowrap}
+.b-x{padding:9px 10px;font-size:13px;background:transparent;color:var(--sub)}
+/* ── stats ── */
+.stat-tabs{display:flex;gap:8px;margin-bottom:16px}
+.stat-tab{flex:1;padding:9px 0;font-size:13px;border-radius:12px;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
+.stat-tab.on{background:var(--ink);color:#fff;border:none}
+.stat-card{background:var(--card);border-radius:16px;border:1.5px solid var(--line);padding:16px;margin-bottom:14px}
+.stat-title{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;color:var(--ink)}
+.rank-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rank-row:last-child{border-bottom:none}
+.rank-num{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;width:26px;text-align:center;color:var(--sub)}
+.rank-num.gold{color:#D4A017}.rank-num.silver{color:#8A8A8A}.rank-num.bronze{color:#A0522D}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-meta{font-size:12px;color:var(--sub);margin-top:1px}
+.genre-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.genre-bar-label{font-size:12.5px;width:80px;flex-shrink:0;text-align:right;color:var(--ink)}
+.genre-bar-track{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.genre-bar-fill{height:100%;border-radius:5px;background:var(--accent)}
+.genre-bar-count{font-size:12px;color:var(--sub);width:24px;flex-shrink:0}
+/* ── calendar ── */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-nav .cal-month{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:16px}
+.cal-nav button{background:transparent;border:1.5px solid var(--line);color:var(--ink);padding:6px 14px;font-size:15px;border-radius:10px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--sub);padding:4px 0}
+.cal-day{text-align:center;padding:6px 2px;border-radius:8px;font-size:13px;min-height:36px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.cal-day.today{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.cal-day.has-visit{cursor:pointer}
+.cal-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.cal-empty{background:none}
+.cal-detail{background:var(--accent-soft);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:13.5px}
+/* ── settings modal ── */
+#settings-modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(51,41,31,.5);align-items:flex-end;justify-content:center}
+#settings-modal.open{display:flex}
+.settings-sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:24px 20px calc(32px + env(safe-area-inset-bottom));width:100%;max-width:560px}
+.settings-sheet h2{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;margin:0 0 18px}
+.settings-row{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;border:1.5px solid var(--line)}
+.settings-row p{font-size:12.5px;color:var(--sub);margin:6px 0 12px;line-height:1.7}
+/* ── nav ── */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:rgba(255,249,240,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1.5px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:5px;z-index:40}
+nav button{flex:1;padding:9px 0;font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:14px;background:transparent;color:var(--sub)}
+nav button .ni{font-size:17px;line-height:1}
+nav button.on{background:var(--accent-soft);color:var(--accent)}
+nav button.addtab{background:var(--accent);color:#fff}
+/* ── toast ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:100px;font-size:13.5px;z-index:50;max-width:86%;text-align:center;line-height:1.5;box-shadow:0 4px 14px rgba(0,0,0,.18);display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="title dm">ランチ<b>帖</b></div>
+    <div class="subtitle">3日にいちどの、ささやかな記録</div>
+  </div>
+  <div class="hright">
+    <button class="gear" id="gearBtn" title="設定">⚙️</button>
+    <div class="stamp"><span class="n dm" id="stampN">0</span><span class="u">軒め</span></div>
+  </div>
+</header>
+<div id="stats"></div>
+<main id="view"></main>
+<div id="toast"></div>
+
+<nav>
+  <button data-tab="visited"><span class="ni">🍚</span>行った店</button>
+  <button data-tab="add" class="addtab"><span class="ni">＋</span>記録する</button>
+  <button data-tab="wishlist"><span class="ni">🔖</span>行きたい店</button>
+  <button data-tab="stats"><span class="ni">📊</span>統計</button>
+</nav>
+
+<!-- settings modal -->
+<div id="settings-modal">
+  <div class="settings-sheet">
+    <h2 class="dm">設定 / バックアップ</h2>
+    <div class="settings-row">
+      <label class="lb">バックアップを書き出す</label>
+      <p>JSONファイルとして保存します。「ファイル」アプリのダウンロードフォルダに入ります。</p>
+      <button class="btn-accent" id="exportBtn" style="font-size:15px">📤 書き出す</button>
+    </div>
+    <div class="settings-row">
+      <label class="lb">バックアップから復元する</label>
+      <p>書き出したJSONを選択すると復元できます。現在のデータに上書きされます。</p>
+      <button class="btn-ghost" id="importBtn" style="width:100%;font-size:15px">📥 読み込む</button>
+    </div>
+    <button class="btn-ghost" id="closeSettings" style="width:100%;margin-top:6px">閉じる</button>
+  </div>
+</div>
+
+<input type="file" id="photoFile" accept="image/*" multiple hidden>
+<input type="file" id="restoreFile" accept=".json" hidden>
+
+<script>
+"use strict";
+// ── IndexedDB ──
+let db=null;
+const openDB=()=>new Promise((res,rej)=>{
+  const req=indexedDB.open("lunchlog",1);
+  req.onupgradeneeded=()=>{
+    const d=req.result;
+    if(!d.objectStoreNames.contains("visits"))d.createObjectStore("visits",{keyPath:"id"});
+    if(!d.objectStoreNames.contains("kv"))d.createObjectStore("kv");
+  };
+  req.onsuccess=()=>{db=req.result;res()};
+  req.onerror=()=>rej(req.error);
+});
+const reqP=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const putVisit=v=>reqP(db.transaction("visits","readwrite").objectStore("visits").put(v));
+const delVisit=id=>reqP(db.transaction("visits","readwrite").objectStore("visits").delete(id));
+const allVisits=()=>reqP(db.transaction("visits").objectStore("visits").getAll());
+const kvSet=(k,v)=>reqP(db.transaction("kv","readwrite").objectStore("kv").put(v,k));
+const kvGet=k=>reqP(db.transaction("kv").objectStore("kv").get(k));
+
+// ── Utilities ──
+const GENRES=["ラーメン","うどん・そば","定食・和食","カレー","中華","洋食","イタリアン","寿司・海鮮","焼肉・肉","カフェ・軽食","パン・サンド","その他"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const todayStr=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const fmtDate=iso=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${y}年${Number(m)}月${Number(d)}日`};
+const fmtYen=n=>(n||n===0)?"¥"+Number(n).toLocaleString():"";
+const fmtScore=n=>Number.isInteger(n)?n+".0":String(n);
+const scoreHtml=(v,big)=>`<span class="score${big?" big":""}"><span class="s1">★</span><span class="s2">${fmtScore(v)}</span><span class="s3">/10</span></span>`;
+
+// 旧データ互換：photo単体→photos配列に正規化
+const normalizeRecord=r=>{
+  if(r.photos)return r;
+  return{...r,photos:r.photo?[r.photo]:[],photo:undefined};
+};
+
+let toastTimer=null;
+const toast=msg=>{const t=$("#toast");t.textContent=msg;t.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.style.display="none"},2600)};
+
+// ── Image compression ──
+const drawToUrl=(img,maxSize,q)=>{
+  let w=img.width,h=img.height;
+  if(w>maxSize||h>maxSize){const sc=maxSize/Math.max(w,h);w=Math.round(w*sc);h=Math.round(h*sc)}
+  const c=document.createElement("canvas");c.width=w;c.height=h;
+  c.getContext("2d").drawImage(img,0,0,w,h);
+  return c.toDataURL("image/jpeg",q);
+};
+const CSTEPS=[[900,.7],[760,.6],[640,.5],[520,.42],[420,.35]];
+const compressImage=file=>new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      let out=null;
+      for(const[s,q]of CSTEPS){out=drawToUrl(img,s,q);if(out.length<400000)break}
+      resolve(out);
+    };
+    img.onerror=()=>reject(new Error("img"));
+    img.src=e.target.result;
+  };
+  reader.onerror=()=>reject(new Error("read"));
+  reader.readAsDataURL(file);
+});
+
+// ── State ──
+const emptyForm=()=>({name:"",date:todayStr(),genre:"",price:"",rating:7,comment:"",photos:[]});
+const state={
+  tab:"visited",visits:[],wishlist:[],
+  sortBy:"date",genreFilter:"すべて",searchQuery:"",
+  expanded:null,editingId:null,form:emptyForm(),
+  statsView:"chart",
+  calYear:new Date().getFullYear(),calMonth:new Date().getMonth(),
+  calSelected:null,
+};
+
+// ── Render header ──
+const renderHeader=()=>{
+  $("#stampN").textContent=state.visits.length;
+  const st=$("#stats");
+  if(state.visits.length&&state.tab==="visited"){
+    const avg=(state.visits.reduce((s,r)=>s+(r.rating||0),0)/state.visits.length).toFixed(1);
+    const priced=state.visits.filter(r=>r.price!=null);
+    const avgP=priced.length?Math.round(priced.reduce((s,r)=>s+r.price,0)/priced.length):null;
+    st.innerHTML=`平均採点 <span class="sc">★${avg}</span>${avgP!=null?"・平均 "+fmtYen(avgP):""}・行きたい店 ${state.wishlist.length}軒`;
+    st.style.display="block";
+  }else{st.style.display="none"}
+};
+
+const emptyHtml=(ic,t,b)=>`<div class="empty"><div class="ic">${ic}</div><div class="t">${t}</div><div class="b">${b}</div></div>`;
+
+// ── Render visited ──
+const renderVisited=()=>{
+  let html="";
+  const genres=["すべて",...GENRES.filter(g=>state.visits.some(r=>r.genre===g))];
+  if(state.visits.length&&genres.length>2){
+    html+=`<div class="chiprow">`+genres.map(g=>`<button class="chip${state.genreFilter===g?" on-red":""}" data-act="filter" data-g="${esc(g)}">${esc(g)}</button>`).join("")+`</div>`;
+  }
+  // search bar
+  html+=`<div class="searchrow"><span class="sic">🔍</span><input id="searchInput" placeholder="店名・感想で検索…" value="${esc(state.searchQuery)}"></div>`;
+
+  if(state.visits.length>1){
+    html+=`<div class="sortrow">`+[["date","新しい順"],["rating","採点順"],["price","安い順"]].map(([k,l])=>`<button class="sort${state.sortBy===k?" on":""}" data-act="sort" data-k="${k}">${l}</button>`).join("")+`</div>`;
+  }
+  const q=state.searchQuery.trim().toLowerCase();
+  const filtered=state.visits.filter(r=>{
+    if(state.genreFilter!=="すべて"&&r.genre!==state.genreFilter)return false;
+    if(q&&!(r.name.toLowerCase().includes(q)||(r.comment||"").toLowerCase().includes(q)||(r.genre||"").toLowerCase().includes(q)))return false;
+    return true;
+  });
+  const sorted=[...filtered].sort((a,b)=>
+    state.sortBy==="date"?(b.date||"").localeCompare(a.date||"")
+    :state.sortBy==="rating"?(b.rating-a.rating)||(b.date||"").localeCompare(a.date||"")
+    :((a.price??Infinity)-(b.price??Infinity))
+  );
+  if(!state.visits.length){
+    html+=emptyHtml("🍱","まだ記録がありません","最初のランチを記録してみましょう。下の「＋ 記録する」からどうぞ。");
+  }else if(!sorted.length){
+    html+=emptyHtml("🔍","見つかりませんでした","検索キーワードやフィルタを変えてみてください。");
+  }else{
+    html+=sorted.map(r=>{
+      const open=state.expanded===r.id;
+      const photos=r.photos&&r.photos.length?r.photos:[];
+      let galleryHtml="";
+      if(photos.length){
+        galleryHtml=`<div class="card-gallery${open?"":" closed"}">`+photos.map(p=>`<img src="${p}" alt="" loading="lazy">`).join("")+`</div>`;
+      }
+      return`<div class="card${open?" open":""}" data-act="card" data-id="${r.id}">
+        ${galleryHtml}
+        <div class="body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div style="min-width:0">
+              <div class="cname dm">${esc(r.name)}</div>
+              <div class="cmeta">
+                <span>${fmtDate(r.date)}</span>
+                ${r.genre?`<span class="tag">${esc(r.genre)}</span>`:""}
+                ${r.price!=null?`<span class="price">${fmtYen(r.price)}</span>`:""}
+              </div>
+            </div>
+            ${scoreHtml(r.rating)}
+          </div>
+          ${r.comment?`<div class="comment">${esc(r.comment)}</div>`:""}
+          ${open?`<div class="cardbtns">
+            <button class="b-edit" data-act="edit" data-id="${r.id}">編集</button>
+            <a href="https://maps.apple.com/?q=${encodeURIComponent(r.name)}" target="_blank" class="b-map" style="padding:8px 14px;font-size:13px;font-weight:700;border-radius:12px;text-decoration:none;display:inline-flex;align-items:center">🗺️ 地図</a>
+            <button class="btn-ghost" data-act="del" data-id="${r.id}" style="padding:8px 14px;font-size:13px">削除</button>
+          </div>`:""}
+        </div>
+      </div>`;
+    }).join("");
+  }
+  $("#view").innerHTML=html;
+  // search input live binding
+  const si=$("#searchInput");
+  if(si){
+    si.addEventListener("input",e=>{state.searchQuery=e.target.value;renderVisited()});
+    si.addEventListener("click",e=>e.stopPropagation());
+  }
+};
+
+// ── Render wishlist ──
+const renderWishlist=()=>{
+  let html=`<div class="wishform">
+    <label class="lb">気になるお店を登録</label>
+    <input id="wishName" placeholder="お店の名前">
+    <input id="wishMemo" placeholder="メモ（例：天神の新店、カレーが評判）" style="margin-bottom:10px">
+    <button class="btn-green" data-act="addwish">行きたい店に追加</button>
+  </div>`;
+  if(!state.wishlist.length){html+=emptyHtml("📝","行きたい店はまだありません","気になるお店を見つけたら、忘れないうちにここへ。")}
+  else html+=state.wishlist.map(w=>`<div class="wishitem">
+    <div class="winfo">
+      <div class="wname dm">${esc(w.name)}</div>
+      ${w.memo?`<div class="wmemo">${esc(w.memo)}</div>`:""}
+    </div>
+    <button class="b-went" data-act="went" data-id="${w.id}">行った！</button>
+    <button class="b-x" data-act="delwish" data-id="${w.id}">✕</button>
+  </div>`).join("");
+  $("#view").innerHTML=html;
+};
+
+// ── Render add ──
+const renderAdd=()=>{
+  const f=state.form;
+  const photosHtml=`<div class="photo-strip">`
+    +f.photos.map((p,i)=>`<div class="photo-thumb"><img src="${p}" alt=""><button class="del-ph" data-act="delphoto" data-i="${i}">✕</button></div>`).join("")
+    +(f.photos.length<5?`<button class="photo-add" data-act="pickphoto"><span class="pa-ic">📷</span><span>写真追加</span></button>`:"")
+    +`</div>`;
+  $("#view").innerHTML=`<div class="formcard">
+    <div class="ftitle dm">${state.editingId?"記録を編集":"今日のランチを記録"}</div>
+    <div class="frow">
+      <label class="lb">お店の名前</label>
+      <input id="fName" placeholder="例：博多 一幸舎" value="${esc(f.name)}">
+    </div>
+    <div class="frow2">
+      <div><label class="lb">日付</label><input type="date" id="fDate" value="${esc(f.date)}"></div>
+      <div><label class="lb">料金（円）</label><input type="number" inputmode="numeric" min="0" step="10" id="fPrice" placeholder="例：980" value="${esc(f.price)}"></div>
+    </div>
+    <div class="frow">
+      <label class="lb">ジャンル</label>
+      <div class="genres">${GENRES.map(g=>`<button class="chip${f.genre===g?" on-green":""}" data-act="genre" data-g="${esc(g)}">${esc(g)}</button>`).join("")}</div>
+    </div>
+    <div class="frow" style="margin-bottom:16px">
+      <label class="lb">採点</label>
+      <div class="sliderrow">
+        <input type="range" min="0.5" max="10" step="0.5" id="fRating" value="${f.rating}">
+        <span id="scoreView">${scoreHtml(f.rating,true)}</span>
+      </div>
+      <div class="slidelabels"><span>0.5</span><span>5.0</span><span>10</span></div>
+    </div>
+    <div class="frow">
+      <label class="lb">感想</label>
+      <textarea id="fComment" placeholder="味、雰囲気、また行きたいか、など">${esc(f.comment)}</textarea>
+    </div>
+    <div class="frow" style="margin-bottom:20px">
+      <label class="lb">写真（最大5枚）</label>
+      ${photosHtml}
+    </div>
+    <button class="btn-accent" data-act="save" id="saveBtn" style="font-size:17px">${state.editingId?"更新する":"ごちそうさま（保存）"}</button>
+    ${state.editingId?`<button class="btn-ghost" data-act="canceledit" style="width:100%;margin-top:8px">編集をやめる</button>`:""}
+  </div>`;
+  $("#fName").addEventListener("input",e=>state.form.name=e.target.value);
+  $("#fDate").addEventListener("change",e=>state.form.date=e.target.value);
+  $("#fPrice").addEventListener("input",e=>state.form.price=e.target.value);
+  $("#fComment").addEventListener("input",e=>state.form.comment=e.target.value);
+  $("#fRating").addEventListener("input",e=>{state.form.rating=Number(e.target.value);$("#scoreView").innerHTML=scoreHtml(state.form.rating,true)});
+};
+
+// ── Render stats ──
+const renderStats=()=>{
+  const subTabs=`<div class="stat-tabs">
+    <button class="stat-tab${state.statsView==="chart"?" on":""}" data-act="stview" data-v="chart">月別</button>
+    <button class="stat-tab${state.statsView==="ranking"?" on":""}" data-act="stview" data-v="ranking">ランキング</button>
+    <button class="stat-tab${state.statsView==="calendar"?" on":""}" data-act="stview" data-v="calendar">カレンダー</button>
+  </div>`;
+  let content="";
+  if(state.statsView==="chart")content=renderChart();
+  else if(state.statsView==="ranking")content=renderRanking();
+  else content=renderCalendar();
+  $("#view").innerHTML=subTabs+content;
+  // calendar day click
+  document.querySelectorAll("[data-act=calday]").forEach(el=>{
+    el.addEventListener("click",e=>{e.stopPropagation();const d=el.dataset.d;state.calSelected=state.calSelected===d?null:d;renderStats()});
+  });
+};
+
+const renderChart=()=>{
+  const now=new Date();
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`);
+  }
+  const counts=months.map(m=>state.visits.filter(v=>(v.date||"").startsWith(m)).length);
+  const spends=months.map(m=>{
+    const vs=state.visits.filter(v=>(v.date||"").startsWith(m)&&v.price!=null);
+    return vs.length?Math.round(vs.reduce((s,v)=>s+v.price,0)/vs.length):null;
+  });
+  const maxC=Math.max(...counts,1);
+  const W=320,H=130,PAD_L=10,PAD_R=10,BAR_GAP=6;
+  const barW=(W-PAD_L-PAD_R)/months.length-BAR_GAP;
+  const bars=months.map((m,i)=>{
+    const x=PAD_L+i*(barW+BAR_GAP);
+    const bh=Math.max(4,Math.round((counts[i]/maxC)*(H-30)));
+    const y=H-20-bh;
+    const lbl=m.slice(5)+"月";
+    const color=i===5?"var(--accent)":"var(--accent-soft)";
+    return`<rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="4" fill="${color}"/>
+<text x="${x+barW/2}" y="${H-4}" text-anchor="middle" font-size="10" fill="var(--sub)">${lbl}</text>
+${counts[i]?`<text x="${x+barW/2}" y="${y-3}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">${counts[i]}</text>`:""}`;
+  }).join("");
+  let spendHtml="";
+  const hasSpend=spends.some(s=>s!=null);
+  if(hasSpend){
+    spendHtml=`<div style="margin-top:14px"><div class="stat-title">平均ランチ代（円）</div>`
+    +months.map((m,i)=>{
+      const lbl=m.slice(5)+"月";
+      return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+        <span style="font-size:12px;width:32px;color:var(--sub);flex-shrink:0">${lbl}</span>
+        <span style="font-weight:700;font-size:14px;color:var(--ink)">${spends[i]!=null?fmtYen(spends[i]):"—"}</span>
+      </div>`;
+    }).join("")+"</div>";
+  }
+  const totalSpend=state.visits.filter(v=>v.price!=null).reduce((s,v)=>s+v.price,0);
+  return`<div class="stat-card">
+    <div class="stat-title">月別訪問回数（直近6ヶ月）</div>
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">${bars}</svg>
+    ${spendHtml}
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)">
+      累計 <b style="color:var(--ink)">${state.visits.length}軒</b>
+      ${totalSpend?` ・ 累計出費 <b style="color:var(--ink)">${fmtYen(totalSpend)}</b>`:""}
+    </div>
+  </div>`;
+};
+
+const renderRanking=()=>{
+  const medals=["gold","silver","bronze"];
+  const top5=[...state.visits].sort((a,b)=>b.rating-a.rating||b.date.localeCompare(a.date)).slice(0,5);
+  const rankRows=top5.map((r,i)=>`<div class="rank-row">
+    <span class="rank-num${medals[i]?" "+medals[i]:""}">${i+1}</span>
+    <div class="rank-info">
+      <div class="rank-name">${esc(r.name)}</div>
+      <div class="rank-meta">${fmtDate(r.date)}${r.price!=null?" · "+fmtYen(r.price):""}${r.genre?" · "+r.genre:""}</div>
+    </div>
+    ${scoreHtml(r.rating)}
+  </div>`).join("");
+  // genre breakdown
+  const genreCounts={};
+  state.visits.forEach(v=>{const g=v.genre||"その他";genreCounts[g]=(genreCounts[g]||0)+1});
+  const gSorted=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1]);
+  const maxG=Math.max(...Object.values(genreCounts),1);
+  const genreRows=gSorted.map(([g,c])=>`<div class="genre-bar-row">
+    <span class="genre-bar-label">${esc(g)}</span>
+    <div class="genre-bar-track"><div class="genre-bar-fill" style="width:${Math.round(c/maxG*100)}%"></div></div>
+    <span class="genre-bar-count">${c}</span>
+  </div>`).join("");
+  return(top5.length?`<div class="stat-card"><div class="stat-title">採点ランキング</div>${rankRows}</div>`
+    :emptyHtml("🍱","まだ記録がありません",""))
+    +(gSorted.length?`<div class="stat-card"><div class="stat-title">ジャンル別 訪問回数</div>${genreRows}</div>`:"");
+};
+
+const renderCalendar=()=>{
+  const y=state.calYear,m=state.calMonth;
+  const fst=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const todayISO=todayStr();
+  const visitDays={};
+  state.visits.forEach(v=>{if(v.date)visitDays[v.date]=(visitDays[v.date]||[]).concat(v)});
+  const DOW=["日","月","火","水","木","金","土"];
+  const dowHtml=DOW.map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  let cells="";
+  for(let i=0;i<fst;i++)cells+=`<div class="cal-empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday=iso===todayISO;
+    const vs=visitDays[iso]||[];
+    const hasDot=vs.length>0;
+    cells+=`<div class="cal-day${isToday?" today":""}${hasDot?" has-visit":""}" ${hasDot?`data-act="calday" data-d="${iso}"`:""}>${d}${hasDot?`<span class="cal-dot"></span>`:""}</div>`;
+  }
+  let detailHtml="";
+  if(state.calSelected&&visitDays[state.calSelected]){
+    detailHtml=visitDays[state.calSelected].map(r=>`<div class="cal-detail">
+      <b class="dm">${esc(r.name)}</b>
+      ${r.genre?` <span class="tag">${esc(r.genre)}</span>`:""}
+      <span style="float:right">${scoreHtml(r.rating)}</span>
+      ${r.price!=null?`<div style="font-size:12px;color:var(--sub);margin-top:3px">${fmtYen(r.price)}</div>`:""}
+      ${r.comment?`<div style="font-size:13px;margin-top:6px;line-height:1.6">${esc(r.comment)}</div>`:""}
+    </div>`).join("");
+  }
+  const mLabel=`${y}年${m+1}月`;
+  return`<div class="stat-card">
+    <div class="cal-nav">
+      <button data-act="calprev">‹</button>
+      <span class="cal-month dm">${mLabel}</span>
+      <button data-act="calnext">›</button>
+    </div>
+    <div class="cal-grid">${dowHtml}${cells}</div>
+    ${detailHtml}
+  </div>`;
+};
+
+// ── render dispatcher ──
+const render=()=>{
+  renderHeader();
+  document.querySelectorAll("nav button").forEach(b=>{
+    b.classList.toggle("on",b.dataset.tab===state.tab&&b.dataset.tab!=="add");
+  });
+  if(state.tab==="visited")renderVisited();
+  else if(state.tab==="wishlist")renderWishlist();
+  else if(state.tab==="stats")renderStats();
+  else renderAdd();
+};
+
+// ── saveRecord ──
+const saveRecord=async()=>{
+  const f=state.form;
+  if(!f.name.trim()){toast("お店の名前を入れてください");return}
+  const btn=$("#saveBtn");btn.disabled=true;btn.style.opacity=".6";
+  const id=state.editingId||String(Date.now());
+  const record={id,name:f.name.trim(),date:f.date,genre:f.genre||"その他",
+    price:f.price===""?null:Number(f.price),rating:f.rating,comment:f.comment,
+    photos:f.photos,scale:10};
+  try{
+    await putVisit(record);
+    const wasEdit=!!state.editingId;
+    state.visits=[...state.visits.filter(r=>r.id!==id),record];
+    state.form=emptyForm();state.editingId=null;state.tab="visited";
+    render();toast(wasEdit?"更新しました":"ごちそうさまでした！記録完了 🍚");
+  }catch(e){btn.disabled=false;btn.style.opacity="1";toast("保存に失敗："+(e?.message||e))}
+};
+
+// ── onAction ──
+const onAction=async(act,el)=>{
+  if(act==="filter"){state.genreFilter=el.dataset.g;state.searchQuery="";render()}
+  else if(act==="sort"){state.sortBy=el.dataset.k;render()}
+  else if(act==="card"){const id=el.dataset.id;state.expanded=state.expanded===id?null:id;render()}
+  else if(act==="edit"){
+    const r=state.visits.find(x=>x.id===el.dataset.id);if(!r)return;
+    state.form={name:r.name,date:r.date,genre:r.genre||"",price:r.price??"",
+      rating:r.rating,comment:r.comment||"",photos:r.photos||[]};
+    state.editingId=r.id;state.tab="add";render();window.scrollTo(0,0);
+  }
+  else if(act==="del"){
+    if(!confirm("この記録を削除しますか？"))return;
+    await delVisit(el.dataset.id);
+    state.visits=state.visits.filter(r=>r.id!==el.dataset.id);
+    state.expanded=null;render();toast("削除しました");
+  }
+  else if(act==="genre"){state.form.genre=state.form.genre===el.dataset.g?"":el.dataset.g;renderAdd()}
+  else if(act==="pickphoto"){$("#photoFile").click()}
+  else if(act==="delphoto"){
+    const i=Number(el.dataset.i);
+    state.form.photos=state.form.photos.filter((_,idx)=>idx!==i);
+    renderAdd();
+  }
+  else if(act==="save"){await saveRecord()}
+  else if(act==="canceledit"){state.form=emptyForm();state.editingId=null;state.tab="visited";render()}
+  else if(act==="addwish"){
+    const name=$("#wishName").value.trim();
+    if(!name){toast("お店の名前を入れてください");return}
+    state.wishlist=[{id:String(Date.now()),name,memo:$("#wishMemo").value.trim(),added:todayStr()},...state.wishlist];
+    await kvSet("wishlist",state.wishlist);render();toast("行きたい店に追加しました");
+  }
+  else if(act==="delwish"){state.wishlist=state.wishlist.filter(w=>w.id!==el.dataset.id);await kvSet("wishlist",state.wishlist);render()}
+  else if(act==="went"){
+    const w=state.wishlist.find(x=>x.id===el.dataset.id);if(!w)return;
+    state.wishlist=state.wishlist.filter(x=>x.id!==w.id);await kvSet("wishlist",state.wishlist);
+    state.form={...emptyForm(),name:w.name};state.editingId=null;state.tab="add";
+    render();window.scrollTo(0,0);toast(`「${w.name}」の記録をつけましょう`);
+  }
+  else if(act==="stview"){state.statsView=el.dataset.v;state.calSelected=null;renderStats()}
+  else if(act==="calprev"){
+    state.calMonth--;if(state.calMonth<0){state.calMonth=11;state.calYear--}
+    state.calSelected=null;renderStats();
+  }
+  else if(act==="calnext"){
+    state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++}
+    state.calSelected=null;renderStats();
+  }
+};
+
+// ── event delegation ──
+document.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-act]");
+  if(!btn)return;
+  if(btn.dataset.act!=="card")e.stopPropagation();
+  if(btn.dataset.act==="card"&&e.target.closest("[data-act]")!==btn)return;
+  onAction(btn.dataset.act,btn);
+},true);
+
+document.querySelectorAll("nav button").forEach(b=>{
+  b.addEventListener("click",()=>{state.tab=b.dataset.tab;render();window.scrollTo(0,0)});
+});
+
+// photo (multiple)
+$("#photoFile").addEventListener("change",async e=>{
+  const files=Array.from(e.target.files||[]);
+  for(const file of files){
+    if(state.form.photos.length>=5)break;
+    try{state.form.photos=[...state.form.photos,await compressImage(file)]}
+    catch{toast("写真の読み込みに失敗しました")}
+  }
+  e.target.value="";
+  renderAdd();
+});
+
+// settings modal
+$("#gearBtn").addEventListener("click",()=>$("#settings-modal").classList.add("open"));
+$("#closeSettings").addEventListener("click",()=>$("#settings-modal").classList.remove("open"));
+$("#settings-modal").addEventListener("click",e=>{if(e.target===$("#settings-modal"))$("#settings-modal").classList.remove("open")});
+
+$("#exportBtn").addEventListener("click",()=>{
+  const data=JSON.stringify({visits:state.visits,wishlist:state.wishlist,exportedAt:new Date().toISOString()},null,2);
+  const blob=new Blob([data],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const d=new Date();
+  a.href=url;a.download=`lunchlog_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}.json`;
+  a.click();URL.revokeObjectURL(url);
+  toast("書き出しました！ファイルアプリに保存されています");
+});
+$("#importBtn").addEventListener("click",()=>$("#restoreFile").click());
+$("#restoreFile").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!Array.isArray(data.visits)){toast("ファイルの形式が正しくありません");return}
+      if(!confirm(`${data.visits.length}件の記録を復元します。現在のデータは上書きされます。よろしいですか？`))return;
+      for(const v of data.visits)await putVisit(normalizeRecord(v));
+      if(Array.isArray(data.wishlist)){await kvSet("wishlist",data.wishlist);state.wishlist=data.wishlist}
+      state.visits=(await allVisits()).map(normalizeRecord)||[];
+      $("#settings-modal").classList.remove("open");
+      render();toast(`${data.visits.length}件を復元しました！`);
+    }catch(err){toast("読み込みに失敗しました："+(err?.message||err))}
+    e.target.value="";
+  };
+  reader.readAsText(file);
+});
+
+// ── Boot ──
+(async()=>{
+  try{
+    await openDB();
+    state.visits=((await allVisits())||[]).map(normalizeRecord);
+    state.wishlist=(await kvGet("wishlist"))||[];
+  }catch(e){toast("データベースを開けませんでした："+(e?.message||e))}
+  render();
+})();
+</script>
+</body>
+</html>
