@@ -625,6 +625,18 @@ const renderMapHTML=()=>{
   return html;
 };
 
+// 地図ポップアップから詳細に飛ぶ
+window.goToVisit=id=>{
+  state.tab="visited";
+  state.expanded=id;
+  // スクロールして該当カードまで移動
+  render();
+  setTimeout(()=>{
+    const el=document.querySelector(`.card[data-id="${id}"]`);
+    if(el)el.scrollIntoView({behavior:"smooth",block:"center"});
+  },120);
+};
+
 const initLeafletMap=()=>{
   const el=document.getElementById("leaflet-map");
   if(!el||typeof L==="undefined")return;
