@@ -73,6 +73,7 @@ button{border:none;border-radius:12px;padding:14px 18px;font-size:16px;font-weig
 .cardbtns button{padding:8px 14px;font-size:13px}
 .b-edit{background:var(--accent-soft);color:var(--accent)}
 .b-map{background:#E8F0FF;color:#2A5AC8}
+.b-tabelog{background:#FFEDE0;color:#D4501E}
 /* ── score ── */
 .score{display:inline-flex;align-items:baseline;gap:2px;color:var(--star);font-weight:900;font-family:'Zen Maru Gothic',sans-serif;flex-shrink:0}
 .score .s1{font-size:13px}.score .s2{font-size:16px}.score .s3{font-size:10.5px;color:var(--sub);font-weight:700}
@@ -183,7 +184,7 @@ nav button.addtab{background:var(--accent);color:#fff}
   <div>
     <div class="title dm">ランチ<b>帖</b></div>
     <div class="subtitle">3日にいちどの、ささやかな記録</div>
-    <div class="version-badge">v1.5 · 2026-06-14</div>
+    <div class="version-badge">v1.6 · 2026-06-14</div>
   </div>
   <div class="hright">
     <button class="gear" id="gearBtn" title="設定">⚙️</button>
@@ -381,7 +382,8 @@ const renderVisited=()=>{
           ${r.comment?`<div class="comment">${esc(r.comment)}</div>`:""}
           ${open?`<div class="cardbtns">
             <button class="b-edit" data-act="edit" data-id="${r.id}">編集</button>
-            <a href="https://maps.apple.com/?q=${encodeURIComponent(r.name)}" target="_blank" class="b-map" style="padding:8px 14px;font-size:13px;font-weight:700;border-radius:12px;text-decoration:none;display:inline-flex;align-items:center">🗺️ 地図</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name)}" target="_blank" class="b-map" style="padding:8px 14px;font-size:13px;font-weight:700;border-radius:12px;text-decoration:none;display:inline-flex;align-items:center">🗺️ 地図・営業時間</a>
+            <a href="https://www.google.com/search?q=${encodeURIComponent(r.name+" 食べログ")}" target="_blank" class="b-tabelog" style="padding:8px 14px;font-size:13px;font-weight:700;border-radius:12px;text-decoration:none;display:inline-flex;align-items:center">📖 食べログ</a>
             <button class="btn-ghost" data-act="del" data-id="${r.id}" style="padding:8px 14px;font-size:13px">削除</button>
           </div>`:""}
         </div>
