@@ -183,7 +183,7 @@ nav button.addtab{background:var(--accent);color:#fff}
   <div>
     <div class="title dm">ランチ<b>帖</b></div>
     <div class="subtitle">3日にいちどの、ささやかな記録</div>
-    <div class="version-badge">v1.4 · 2026-06-14</div>
+    <div class="version-badge">v1.5 · 2026-06-14</div>
   </div>
   <div class="hright">
     <button class="gear" id="gearBtn" title="設定">⚙️</button>
@@ -620,10 +620,10 @@ const renderMapHTML=()=>{
     </div>`;
   }
   html+=`<div class="stat-card"><div class="map-legend">
-    <span><span class="map-dot" style="background:#D4A017"></span>\u2605\u2078\u22c5\u2075\u301c\u2081\u2080</span>
-    <span><span class="map-dot" style="background:#C8442A"></span>\u2605\u2077\u301c\u2078</span>
-    <span><span class="map-dot" style="background:#E07830"></span>\u2605\u2075\u301c\u2076\u22c5\u2075</span>
-    <span><span class="map-dot" style="background:#8A7A66"></span>\u301c\u2605\u2074\u22c5\u2075</span>
+    <span><span class="map-dot" style="background:#D4A017"></span>\u2605 8.5\u301c10</span>
+    <span><span class="map-dot" style="background:#C8442A"></span>\u2605 7\u301c8</span>
+    <span><span class="map-dot" style="background:#E07830"></span>\u2605 5\u301c6.5</span>
+    <span><span class="map-dot" style="background:#8A7A66"></span>\u301c\u2605 4.5</span>
   </div></div>`;
   return html;
 };
@@ -656,8 +656,8 @@ const initLeafletMap=()=>{
     const c=pinColor(r.rating);
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C8.4 0 3 5.4 3 12c0 9 12 28 12 28s12-19 12-28C27 5.4 21.6 0 15 0z" fill="${c}" stroke="white" stroke-width="1.5"/><text x="15" y="14" text-anchor="middle" fill="white" font-size="8.5" font-weight="bold" font-family="sans-serif">${r.rating}</text></svg>`;
     const icon=L.divIcon({html:svg,iconSize:[30,40],iconAnchor:[15,40],popupAnchor:[0,-40],className:""});
-    const popup=`<b style="font-size:13px">${r.name}</b><br><span style="font-size:12px;color:#666">${r.genre||""} \u2605${r.rating}/10${r.price!=null?" \u30fb\uFFE5"+r.price.toLocaleString():""}${r.menu?"<br>"+r.menu:""}</span>`;
-    L.marker([r.lat,r.lng],{icon}).addTo(leafletMap).bindPopup(popup);
+    const popup=`<b style="font-size:13px">${r.name}</b><br><span style="font-size:12px;color:#666">${r.genre||""} \u2605${r.rating}/10${r.price!=null?" \u30fb\uFFE5"+r.price.toLocaleString():""}${r.menu?"<br>"+r.menu:""}</span><br><button onclick="window.goToVisit('${r.id}')" style="margin-top:7px;background:#C8442A;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%">\u8a73\u7d30\u3092\u898b\u308b \u2192</button>`;
+    L.marker([r.lat,r.lng],{icon}).addTo(leafletMap).bindPopup(popup,{minWidth:160});
   });
   if(withC.length>1){
     try{leafletMap.fitBounds(withC.map(v=>[v.lat,v.lng]),{padding:[24,24],maxZoom:16});}catch{}
